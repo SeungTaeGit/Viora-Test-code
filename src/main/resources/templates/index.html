@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 페이지</title>
+</head>
+<body>
+<h1>메인 페이지</h1>
+
+<!-- 로그인 여부 확인 -->
+<div th:if="${username == null}">
+    <a th:href="@{/login}">로그인</a> |
+    <a th:href="@{/reviews}">리뷰 게시판</a> |
+    <a th:href="@{/signup}">회원가입</a>
+</div>
+
+<div th:if="${username != null}">
+    <p th:text="'안녕하세요, ' + ${username} + '님!'"></p>
+    <a th:href="@{/reviews}">리뷰 게시판</a> |
+    <a th:href="@{/logout}">로그아웃</a>
+</div>
+</body>
+</html>
