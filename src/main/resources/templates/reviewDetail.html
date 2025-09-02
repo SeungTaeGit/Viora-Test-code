@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 상세</title>
+</head>
+<body>
+<h1>리뷰 상세</h1>
+<p><strong>작성자:</strong> <span th:text="${review.author}"></span></p>
+<p><strong>내용:</strong> <span th:text="${review.content}"></span></p>
+
+<a th:href="@{/reviews}">목록으로</a>
+
+<div th:if="${username == review.author}">
+    <a th:href="@{/reviews/{id}/edit(id=${review.id})}">수정</a>
+    <form th:action="@{/reviews/{id}/delete(id=${review.id})}" method="post" style="display:inline;">
+        <button type="submit">삭제</button>
+    </form>
+</div>
+</body>
+</html>

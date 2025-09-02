@@ -10,8 +10,10 @@
 <!-- 리뷰 목록 -->
 <ul>
     <li th:each="review : ${reviews}">
-        <b th:text="${review.author}"></b> :
-        <span th:text="${review.content}"></span>
+        <a th:href="@{/reviews/{id}(id=${review.id})}">
+            <b th:text="${review.author}"></b> :
+            <span th:text="${review.content}"></span>
+        </a>
     </li>
 </ul>
 

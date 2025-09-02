@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -45,5 +46,59 @@ public class ReviewController {
         }
         reviewService.writeReview(username, content);
         return "redirect:/reviews";
+    }
+
+    @GetMapping("/reviews/{id}")
+    public String reviewDetail(@PathVariable Long id, Model model, HttpSession session) {
+        return reviewService.getReviewById(id)
+                .map(review -> {
+                    model.addAttribute("review", review);
+                    model.addAttribute("username", session.getAttribute("username"));
+                    return "reviewDetail"; // 상세 페이지
+                })
+                .orElse("redirect:/reviews"); // 없는 리뷰일 경우 게시판으로
+    }
+
+    // 리뷰 수정 폼
+    @GetMapping("/reviews/{id}/edit")
+    public String editReviewForm(@PathVariable Long id, Model model, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        return reviewService.getReviewById(id)
+                .map(review -> {
+                    if (!review.getAuthor().equals(username)) {
+                        return "redirect:/reviews"; // 작성자만 수정 가능
+                    }
+                    model.addAttribute("review", review);
+                    return "editReview";
+                })
+                .orElse("redirect:/reviews");
+    }
+
+    // 리뷰 수정 처리
+    @PostMapping("/reviews/{id}/edit")
+    public String updateReview(@PathVariable Long id, @RequestParam String content, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        return reviewService.getReviewById(id)
+                .map(review -> {
+                    if (review.getAuthor().equals(username)) {
+                        reviewService.updateReview(id, content);
+                    }
+                    return "redirect:/reviews/" + id; // 수정 후 상세 페이지로 이동
+                })
+                .orElse("redirect:/reviews");
+    }
+
+    // 리뷰 삭제
+    @PostMapping("/reviews/{id}/delete")
+    public String deleteReview(@PathVariable Long id, HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        return reviewService.getReviewById(id)
+                .map(review -> {
+                    if (review.getAuthor().equals(username)) {
+                        reviewService.deleteReview(id);
+                    }
+                    return "redirect:/reviews"; // 삭제 후 목록으로 이동
+                })
+                .orElse("redirect:/reviews");
     }
 }
